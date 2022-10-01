@@ -1,6 +1,7 @@
 package com.nictas.habitica.client.domain;
 
 import org.immutables.value.Value;
+import org.springframework.lang.Nullable;
 
 @Value.Immutable
 public interface Task {
@@ -28,21 +29,25 @@ public interface Task {
   /**
    * Optional: Due date to be shown in task list. Only valid for type "todo".
    */
+  @Nullable
   String getDate();
 
   /**
    * Optional: Array of UUIDs of tags.
    */
+  @Nullable
   String[] getTags();
 
   /**
    * Optional: Extra notes.
    */
+  @Nullable
   String getNotes();
 
   /**
    * Optional: Difficulty, options are 0.1, 1, 1.5, 2; equivalent of Trivial, Easy, Medium, Hard.
    */
+  @Nullable
   Double getPriority();
 
 }
