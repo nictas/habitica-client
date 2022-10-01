@@ -16,7 +16,11 @@ public class TaskCsvParser {
   public List<Task> parseCsv(List<String> csv) {
     List<Task> tasks = new ArrayList<>();
     for (int i = 0; i < csv.size(); i++) {
-      tasks.add(parseLine(i, csv.get(i)));
+      String line = csv.get(i);
+      if (line == null || line.isBlank()) {
+        continue;
+      }
+      tasks.add(parseLine(i, line));
     }
     return tasks;
   }
