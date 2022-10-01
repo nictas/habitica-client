@@ -20,7 +20,7 @@ public class Main {
     for (Task task : tasks) {
       System.out.printf("Creating user task \"%s\"... ", task.getText());
       client.createUserTask(task);
-      System.out.printf("OK!");
+      System.out.printf("OK!\n");
     }
   }
 
