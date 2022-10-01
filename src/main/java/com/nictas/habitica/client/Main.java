@@ -8,12 +8,39 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import com.nictas.habitica.client.csv.TaskCsvParser;
+import com.nictas.habitica.client.domain.Task;
+
 public class Main {
 
   public static void main(String[] args) {
+    Client client = createClient();
+
+    List<Task> tasks = getTasks(args);
+    for (Task task : tasks) {
+      System.out.printf("Creating user task \"%s\"... ", task.getText());
+      client.createUserTask(task);
+      System.out.printf("OK!");
+    }
+  }
+
+  private static List<Task> getTasks(String[] args) {
+    List<String> tasksCsv = getTasksCsv(args);
+    return new TaskCsvParser().parseCsv(tasksCsv);
+  }
+
+  private static List<String> getTasksCsv(String[] args) {
     Path tasksFilePath = getTasksFilePath(args);
     System.out.println("Tasks file path: " + tasksFilePath);
-    getLines(tasksFilePath);
+    return getLines(tasksFilePath);
+  }
+
+  private static Client createClient() {
+    String username = Configuration.getUsername();
+    System.out.println("Using username: " + username);
+    String key = Configuration.getKey();
+    System.out.println("Using key: " + key);
+    return new ClientFactory().createClient(username, key);
   }
 
   private static List<String> getLines(Path tasksFilePath) {
