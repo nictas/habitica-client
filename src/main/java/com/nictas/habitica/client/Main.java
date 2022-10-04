@@ -13,11 +13,16 @@ import com.nictas.habitica.client.domain.Task;
 
 public class Main {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     Client client = createClient();
 
     List<Task> tasks = getTasks(args);
-    for (Task task : tasks) {
+    for (int i = 0; i < tasks.size(); i++) {
+      if (i != 0 && i % 20 == 0) {
+        System.out.printf("Sleeping for 60s to avoid exceeding the Habitica rate limit...");
+        Thread.sleep(60000);
+      }
+      Task task = tasks.get(i);
       System.out.printf("Creating user task \"%s\"... ", task.getText());
       client.createUserTask(task);
       System.out.printf("OK!\n");
