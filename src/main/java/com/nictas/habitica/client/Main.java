@@ -6,12 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.nictas.habitica.client.csv.TaskCsvParser;
+import com.nictas.habitica.client.domain.CreateUserTaskResponse;
 import com.nictas.habitica.client.domain.Task;
 
 public class Main {
@@ -19,12 +21,17 @@ public class Main {
 	private static final int MAX_RETRIES = 5;
 
 	public static void main(String[] args) throws InterruptedException {
-		Client client = createClient();
+		HabiticaClient client = createClient();
 
 		List<Task> tasks = getTasks(args);
+		List<CreateUserTaskResponse> createdTasks = new ArrayList<>();
 		for (int i = 0; i < tasks.size(); i++) {
 			Task task = tasks.get(i);
-			createTask(client, task);
+			createdTasks.add(createTask(client, task));
+		}
+
+		for (int i = createdTasks.size() - 1; i >= 0; i--) {
+			completeTask(client, createdTasks.get(i));
 		}
 	}
 
@@ -39,12 +46,12 @@ public class Main {
 		return getLines(tasksFilePath);
 	}
 
-	private static Client createClient() {
+	private static HabiticaClient createClient() {
 		String username = Configuration.getUsername();
 		System.out.println("Using username: " + username);
 		String key = Configuration.getKey();
 		System.out.println("Using key: " + key);
-		return new ClientFactory().createClient(username, key);
+		return new HabiticaClientFactory().createClient(username, key);
 	}
 
 	private static List<String> getLines(Path tasksFilePath) {
@@ -70,29 +77,34 @@ public class Main {
 		}
 	}
 
-	private static void createTask(Client client, Task task) {
+	private static CreateUserTaskResponse createTask(HabiticaClient client, Task task) {
 		for (int i = 0; i < MAX_RETRIES; i++) {
 			try {
-				System.out.printf("Creating task \"%s\"... ", task.getText());
-				client.createUserTask(task);
+				if (i == 0) {
+					System.out.printf("Creating task \"%s\"... ", task.getText());
+				} else {
+					System.out.printf("Creating task \"%s\" (retry %d of %d)... ", task.getText(), i + 1, MAX_RETRIES);
+				}
+				CreateUserTaskResponse createdTask = client.createUserTask(task);
 				System.out.printf("OK!%n");
-				return;
+				return createdTask;
 			} catch (WebClientResponseException e) {
 				System.err.printf("%nCreating task \"%s\" failed with: (%d %s) %s%n", task.getText(),
 						e.getRawStatusCode(), e.getStatusText(), e.getResponseBodyAsString());
 				if (e.getStatusCode().is5xxServerError()) {
-					System.out.printf("Retry %d out of %d: ", i + 1, MAX_RETRIES);
 					continue;
 				} else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-					System.out.printf("Sleeping for 65 seconds to reset the Habitica rate limit...%n");
+					System.out.printf("%nSleeping for 65 seconds to reset the Habitica rate limit...%n");
 					sleepQuietly(65000);
-					System.out.printf("Retry %d out of %d: ", i + 1, MAX_RETRIES);
 					continue;
 				} else {
 					System.exit(1);
 				}
 			}
 		}
+		System.err.printf("All %d retries failed!", MAX_RETRIES);
+		System.exit(1);
+		throw new IllegalStateException();
 	}
 
 	private static void sleepQuietly(int millis) {
@@ -102,6 +114,38 @@ public class Main {
 			System.err.println("Sleeping failed: " + e.getMessage());
 			System.exit(1);
 		}
+	}
+
+	private static CreateUserTaskResponse completeTask(HabiticaClient client, CreateUserTaskResponse createdTask) {
+		CreateUserTaskResponse.Data data = createdTask.getData();
+		for (int i = 0; i < MAX_RETRIES; i++) {
+			try {
+				if (i == 0) {
+					System.out.printf("Completing task \"%s\"... ", data.getText());
+				} else {
+					System.out.printf("Completing task \"%s\" (retry %d of %d)... ", data.getText(), i + 1,
+							MAX_RETRIES);
+				}
+				client.completeTask(data.getId());
+				System.out.printf("OK!%n");
+				return createdTask;
+			} catch (WebClientResponseException e) {
+				System.err.printf("%nCompleting task \"%s\" failed with: (%d %s) %s%n", data.getText(),
+						e.getRawStatusCode(), e.getStatusText(), e.getResponseBodyAsString());
+				if (e.getStatusCode().is5xxServerError()) {
+					continue;
+				} else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+					System.out.printf("%nSleeping for 65 seconds to reset the Habitica rate limit...%n");
+					sleepQuietly(65000);
+					continue;
+				} else {
+					System.exit(1);
+				}
+			}
+		}
+		System.err.printf("All %d retries failed!", MAX_RETRIES);
+		System.exit(1);
+		throw new IllegalStateException();
 	}
 
 }
