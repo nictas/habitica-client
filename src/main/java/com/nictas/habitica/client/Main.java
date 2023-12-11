@@ -78,12 +78,12 @@ public class Main {
 	}
 
 	private static CreateUserTaskResponse createTask(HabiticaClient client, Task task) {
-		for (int i = 0; i < MAX_RETRIES; i++) {
+		for (int i = 0; i < MAX_RETRIES + 1; i++) {
 			try {
 				if (i == 0) {
 					System.out.printf("Creating task \"%s\"... ", task.getText());
 				} else {
-					System.out.printf("Creating task \"%s\" (retry %d of %d)... ", task.getText(), i + 1, MAX_RETRIES);
+					System.out.printf("Creating task \"%s\" (retry %d of %d)... ", task.getText(), i, MAX_RETRIES);
 				}
 				CreateUserTaskResponse createdTask = client.createUserTask(task);
 				System.out.printf("OK!%n");
@@ -118,13 +118,12 @@ public class Main {
 
 	private static CreateUserTaskResponse completeTask(HabiticaClient client, CreateUserTaskResponse createdTask) {
 		CreateUserTaskResponse.Data data = createdTask.getData();
-		for (int i = 0; i < MAX_RETRIES; i++) {
+		for (int i = 0; i < MAX_RETRIES + 1; i++) {
 			try {
 				if (i == 0) {
 					System.out.printf("Completing task \"%s\"... ", data.getText());
 				} else {
-					System.out.printf("Completing task \"%s\" (retry %d of %d)... ", data.getText(), i + 1,
-							MAX_RETRIES);
+					System.out.printf("Completing task \"%s\" (retry %d of %d)... ", data.getText(), i, MAX_RETRIES);
 				}
 				client.completeTask(data.getId());
 				System.out.printf("OK!%n");
