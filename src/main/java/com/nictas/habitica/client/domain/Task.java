@@ -1,7 +1,6 @@
 package com.nictas.habitica.client.domain;
 
 import org.immutables.value.Value;
-import org.springframework.lang.Nullable;
 
 @Value.Immutable
 public interface Task {
