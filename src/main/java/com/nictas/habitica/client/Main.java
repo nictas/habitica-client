@@ -47,9 +47,10 @@ public class Main {
     }
 
     private static HabiticaClient createClient() {
-        String username = Configuration.getUsername();
+        Configuration configuration = new Configuration();
+        String username = configuration.getUsername();
         System.out.println("Using username: " + username);
-        String key = Configuration.getKey();
+        String key = configuration.getKey();
         System.out.println("Using key: " + key);
         return new HabiticaClientFactory().createClient(username, key);
     }
