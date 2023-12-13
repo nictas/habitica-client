@@ -9,9 +9,9 @@ import java.util.List;
 import com.nictas.habitica.client.domain.ImmutableTask;
 import com.nictas.habitica.client.domain.Task;
 
-public class TaskCsvParser {
+public class TasksCsvParser {
 
-    private static final String[] CSV_FORMAT = { "Name", "Description", "Difficulty(t, e, m, h)" };
+    static final String[] CSV_FORMAT = { "Name", "Description", "Difficulty(t, e, m, h)" };
 
     public List<Task> parseCsv(List<String> csv) {
         List<Task> tasks = new ArrayList<>();
@@ -26,11 +26,12 @@ public class TaskCsvParser {
     }
 
     private Task parseLine(int i, String line) {
-        String[] lineTokens = line.split(",");
+        String[] lineTokens = line.trim()
+                                  .split(",");
         try {
             return toTask(lineTokens);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(String.format("Unable to parse line %d: %s", i, e.getMessage()), e);
+            throw new IllegalArgumentException(String.format("Unable to parse line %d: %s", i + 1, e.getMessage()), e);
         }
     }
 

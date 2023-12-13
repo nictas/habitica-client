@@ -16,7 +16,7 @@
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <!-- Dependencies -->
         <immutables.version>2.10.0</immutables.version>
-        <spring-boot-starter-webflux.version>3.2.0</spring-boot-starter-webflux.version>
+        <spring-boot.version>3.2.0</spring-boot.version>
     </properties>
 
     <build>
@@ -62,6 +62,7 @@
     </build>
 
     <dependencies>
+        <!-- Provided -->
         <!-- https://mvnrepository.com/artifact/org.immutables/value -->
         <dependency>
             <groupId>org.immutables</groupId>
@@ -69,12 +70,24 @@
             <version>${immutables.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Compile -->
         <!--
         https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>${spring-boot-starter-webflux.version}</version>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
+        <!-- Test -->
+        <!--
+        https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

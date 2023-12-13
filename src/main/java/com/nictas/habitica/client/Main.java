@@ -12,7 +12,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import com.nictas.habitica.client.csv.TaskCsvParser;
+import com.nictas.habitica.client.csv.TasksCsvParser;
 import com.nictas.habitica.client.domain.CreateUserTaskResponse;
 import com.nictas.habitica.client.domain.Task;
 
@@ -37,7 +37,7 @@ public class Main {
 
     private static List<Task> getTasks(String[] args) {
         List<String> tasksCsv = getTasksCsv(args);
-        return new TaskCsvParser().parseCsv(tasksCsv);
+        return new TasksCsvParser().parseCsv(tasksCsv);
     }
 
     private static List<String> getTasksCsv(String[] args) {
