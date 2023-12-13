@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -121,6 +122,30 @@ class TasksCsvParserTest {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> parser.parseCsv(csv));
         assertEquals("Unable to parse line 1: Expected 3 tokens but got 5. Expected format: " + Arrays.toString(TasksCsvParser.CSV_FORMAT),
                      e.getMessage());
+    }
+
+    @Test
+    @DisplayName("With an empty CSV")
+    void testParseCsvWithEmptyCsv1() {
+        List<String> csv = Collections.emptyList();
+
+        List<Task> tasks = parser.parseCsv(csv);
+
+        assertTrue(tasks.isEmpty(), () -> "Result should be empty");
+    }
+
+    @Test
+    @DisplayName("With an empty CSV with whitespace")
+    void testParseCsvWithEmptyCsv2() {
+        List<String> csv = new ArrayList<>();
+        csv.add(null);
+        csv.add("  ");
+        csv.add("\t");
+        csv.add("\n");
+
+        List<Task> tasks = parser.parseCsv(csv);
+
+        assertTrue(tasks.isEmpty(), () -> "Result should be empty");
     }
 
 }
