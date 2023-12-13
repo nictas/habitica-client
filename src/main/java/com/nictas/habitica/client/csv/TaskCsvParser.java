@@ -11,64 +11,64 @@ import com.nictas.habitica.client.domain.Task;
 
 public class TaskCsvParser {
 
-  private static final String[] CSV_FORMAT = {"Name", "Description", "Difficulty(t, e, m, h)"};
+    private static final String[] CSV_FORMAT = { "Name", "Description", "Difficulty(t, e, m, h)" };
 
-  public List<Task> parseCsv(List<String> csv) {
-    List<Task> tasks = new ArrayList<>();
-    for (int i = 0; i < csv.size(); i++) {
-      String line = csv.get(i);
-      if (line == null || line.isBlank()) {
-        continue;
-      }
-      tasks.add(parseLine(i, line));
+    public List<Task> parseCsv(List<String> csv) {
+        List<Task> tasks = new ArrayList<>();
+        for (int i = 0; i < csv.size(); i++) {
+            String line = csv.get(i);
+            if (line == null || line.isBlank()) {
+                continue;
+            }
+            tasks.add(parseLine(i, line));
+        }
+        return tasks;
     }
-    return tasks;
-  }
 
-  private Task parseLine(int i, String line) {
-    String[] lineTokens = line.split(",");
-    try {
-      return toTask(lineTokens);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException(String.format("Unable to parse line %d: %s", i, e.getMessage()), e);
+    private Task parseLine(int i, String line) {
+        String[] lineTokens = line.split(",");
+        try {
+            return toTask(lineTokens);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(String.format("Unable to parse line %d: %s", i, e.getMessage()), e);
+        }
     }
-  }
 
-  private Task toTask(String[] lineTokens) {
-    if (lineTokens.length != CSV_FORMAT.length) {
-      throw new IllegalArgumentException(String.format("Expected %d tokens but got %d. Expected format: %s",
-          CSV_FORMAT.length, lineTokens.length, Arrays.toString(CSV_FORMAT)));
+    private Task toTask(String[] lineTokens) {
+        if (lineTokens.length != CSV_FORMAT.length) {
+            throw new IllegalArgumentException(String.format("Expected %d tokens but got %d. Expected format: %s", CSV_FORMAT.length,
+                                                             lineTokens.length, Arrays.toString(CSV_FORMAT)));
+        }
+        return ImmutableTask.builder()
+                            .text(lineTokens[0])
+                            .type(getDefaultType())
+                            .date(getDefaultDate())
+                            .notes(lineTokens[1])
+                            .priority(parseDifficulty(lineTokens[2]))
+                            .build();
     }
-    return ImmutableTask.builder() //
-        .text(lineTokens[0]) //
-        .type(getDefaultType()) //
-        .date(getDefaultDate()) //
-        .notes(lineTokens[1]) //
-        .priority(parseDifficulty(lineTokens[2])) //
-        .build();
-  }
 
-  private String getDefaultType() {
-    return Task.TYPE_TODO;
-  }
-
-  private String getDefaultDate() {
-    return DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDateTime.now());
-  }
-
-  private Double parseDifficulty(String difficulty) {
-    switch (difficulty) {
-      case "t":
-        return Task.DIFFICULTY_TRIVIAL;
-      case "e":
-        return Task.DIFFICULTY_EASY;
-      case "m":
-        return Task.DIFFICULTY_MEDIUM;
-      case "h":
-        return Task.DIFFICULTY_HARD;
-      default:
-        throw new IllegalArgumentException("Unknown difficulty: " + difficulty);
+    private String getDefaultType() {
+        return Task.TYPE_TODO;
     }
-  }
+
+    private String getDefaultDate() {
+        return DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDateTime.now());
+    }
+
+    private Double parseDifficulty(String difficulty) {
+        switch (difficulty) {
+            case "t":
+                return Task.DIFFICULTY_TRIVIAL;
+            case "e":
+                return Task.DIFFICULTY_EASY;
+            case "m":
+                return Task.DIFFICULTY_MEDIUM;
+            case "h":
+                return Task.DIFFICULTY_HARD;
+            default:
+                throw new IllegalArgumentException("Unknown difficulty: " + difficulty);
+        }
+    }
 
 }
