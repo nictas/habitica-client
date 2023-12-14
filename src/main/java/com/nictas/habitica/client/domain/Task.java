@@ -2,7 +2,12 @@ package com.nictas.habitica.client.domain;
 
 import org.immutables.value.Value;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 @Value.Immutable
+@JsonSerialize(as = ImmutableTask.class)
+@JsonDeserialize(as = ImmutableTask.class)
 public interface Task {
 
     String TYPE_HABIT = "habit";
