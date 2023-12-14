@@ -6,7 +6,7 @@ public class HabiticaClientFactory {
 
     static final String HEADER_X_API_USER = "x-api-user";
     static final String HEADER_X_API_KEY = "x-api-key";
-    static final String HEADER_X_API_CLIENT = "x-api-client";
+    static final String HEADER_X_API_CLIENT = "x-client";
     private static final String HEADER_X_API_CLIENT_SUFFIX = "-Testing";
 
     private static final String BASE_URL = "https://habitica.com/api/v3";
